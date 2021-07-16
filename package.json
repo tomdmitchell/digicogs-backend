@@ -4,7 +4,7 @@
   "description": "Backend for digicogs",
   "main": "index.js",
   "engines": {
-    "node": "14.17.3"
+    "node": "16.5"
   },
   "scripts": {
     "start": "node .",
