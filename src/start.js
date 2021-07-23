@@ -2,7 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import 'express-async-errors';
 import logger from 'loglevel';
-import cookieParser from 'cookie-parser'
 
 import { getRoutes } from './routes';
 
@@ -10,7 +9,6 @@ const startServer = ({ port = process.env.PORT } = {}) => {
   const app = express();
   app.use(cors());
   app.use('/', getRoutes());
-  app.use(cookieParser())
   app.use(errorMiddleware);
 
 return new Promise((resolve) => {
