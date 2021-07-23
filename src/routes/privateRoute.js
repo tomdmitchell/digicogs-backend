@@ -1,6 +1,9 @@
 import express from 'express';
 import masterData from '../data/master_data';
 
+//functions
+import { getDiscogsApiData } from '../functions/getDiscogsApiData';
+
 const privateRoute = () => {
   const router = express.Router();
   router.get('/data', handlePrivateRoute);
@@ -12,7 +15,9 @@ const handlePrivateRoute = async (req, res) => {
   const genreData = createGenreDataArr(req.query.genre, masterData);
   const shuffledData = shuffleArr(genreData);
   const returnedData = filterDataIntoBatch(req.query.year, req.query.style, shuffledData, 10);
-  res.send(returnedData);
+  console.log(`Returned data length: ${returnedData.length}`);
+  const clientResponse = await getDiscogsApiData(returnedData);
+  res.send(clientResponse);
 };
 
 const filterDataIntoBatch = (yearsParam, stylesParam, allData, batchSize) => {
