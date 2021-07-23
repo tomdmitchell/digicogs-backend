@@ -1,9 +1,11 @@
 import express from 'express';
-import { getDataRoutes } from './data';
+import { privateRoute } from './privateRoute';
+import { publicRoute } from './publicRoute';
 
 const getRoutes = () => {
   const router = express.Router();
-  router.use('/data', getDataRoutes());
+  router.use('/private', privateRoute());
+  router.use('/public', publicRoute());
   return router;
 }
 

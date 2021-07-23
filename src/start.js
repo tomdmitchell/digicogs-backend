@@ -1,29 +1,32 @@
 import express from 'express';
-import cors from 'cors'
+import cors from 'cors';
 import 'express-async-errors';
 import logger from 'loglevel';
+import cookieParser from 'cookie-parser'
+
 import { getRoutes } from './routes';
 
-const startServer = ({ port = process.env.PORT } = {})  => {
+const startServer = ({ port = process.env.PORT } = {}) => {
   const app = express();
-  app.use(cors())
+  app.use(cors());
   app.use('/', getRoutes());
+  app.use(cookieParser())
   app.use(errorMiddleware);
 
-  return new Promise((resolve) => {
-    const server = app.listen(port, () => {
-      logger.info(`Listening on port ${server.address().port}`);
-      const originalClose = server.close.bind(server);
-      server.close = () => {
-        return new Promise((resolveClose) => {
-          originalClose(resolveClose);
-        });
-      };
-      setupCloseOnExit(server);
-      resolve(server);
-    });
+return new Promise((resolve) => {
+  const server = app.listen(port, () => {
+    logger.info(`Listening on port ${server.address().port}`);
+    const originalClose = server.close.bind(server);
+    server.close = () => {
+      return new Promise((resolveClose) => {
+        originalClose(resolveClose);
+      });
+    };
+    setupCloseOnExit(server);
+    resolve(server);
   });
-}
+});
+};
 
 const errorMiddleware = (error, req, res, next) => {
   if (res.headersSent) {
@@ -37,7 +40,7 @@ const errorMiddleware = (error, req, res, next) => {
       ...(process.env.NODE_ENV === 'production' ? null : { stack: error.stack }),
     });
   }
-}
+};
 
 const setupCloseOnExit = (server) => {
   async function exitHandler(options = {}) {
@@ -55,9 +58,10 @@ const setupCloseOnExit = (server) => {
 
   process.on('exit', exitHandler);
   process.on('SIGINT', exitHandler.bind(null, { exit: true }));
-  process.on('SIGUSR1', exitHandler.bind(null, { exit: true }));
-  process.on('SIGUSR2', exitHandler.bind(null, { exit: true }));
+  process.once('SIGHUP', exitHandler.bind(null, { exit: true }));
+  process.once('SIGUSR1', exitHandler.bind(null, { exit: true }));
+  process.once('SIGUSR2', exitHandler.bind(null, { exit: true }));
   process.on('uncaughtException', exitHandler.bind(null, { exit: true }));
-}
+};
 
 export { startServer };
