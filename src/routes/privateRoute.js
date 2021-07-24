@@ -1,8 +1,15 @@
 import express from 'express';
+
+//data
 import masterData from '../data/master_data';
 
 //functions
 import { getDiscogsApiData } from '../functions/getDiscogsApiData';
+import { handleReqRate } from '../functions/handleReqrate';
+import { formClientResponse } from '../functions/formClientResponse';
+import { shuffleArray } from '../functions/shuffleArray';
+import { createGenreDataArray } from '../functions/createGenreDataArray';
+import { filterDataIntoBatch } from '../functions/filterDataIntoBatch';
 
 const privateRoute = () => {
   const router = express.Router();
@@ -11,67 +18,14 @@ const privateRoute = () => {
 };
 
 const handlePrivateRoute = async (req, res) => {
-  //GET INITIAL ARR OF DATA
-  const genreData = createGenreDataArr(req.query.genre, masterData);
-  const shuffledData = shuffleArr(genreData);
-  const returnedData = filterDataIntoBatch(req.query.year, req.query.style, shuffledData, 10);
-  console.log(`Returned data length: ${returnedData.length}`);
-  const clientResponse = await getDiscogsApiData(returnedData);
+  const genreData = createGenreDataArray(req.query.genre, masterData);
+  const shuffledData = shuffleArray(genreData);
+  const batchData = filterDataIntoBatch(req.query.year, req.query.style, shuffledData, 10);
+  console.log(`Batch data length: ${batchData.length}`);
+  const discogsApiData = await getDiscogsApiData(batchData);
+  handleReqRate(discogsApiData[discogsApiData.length - 1]);
+  const clientResponse = formClientResponse(discogsApiData, batchData);
   res.send(clientResponse);
-};
-
-const filterDataIntoBatch = (yearsParam, stylesParam, allData, batchSize) => {
-  let reqStylesArr = Array.isArray(stylesParam) ? stylesParam : [stylesParam];
-  let reqYearsArr = Array.isArray(yearsParam) ? yearsParam : [yearsParam];
-  let resultsArr = [];
-  let count = 0;
-  for (let i = 0; i < allData.length; i++) {
-    if (count === batchSize) break;
-    for (let j = 0; j < reqYearsArr.length; j++) {
-      if (allData[i].year === Number(reqYearsArr[j]) || reqYearsArr[j] === 'all') {
-        for (let k = 0; k < reqStylesArr.length; k++) {
-          if (allData[i].style.includes(reqStylesArr[k]) || reqStylesArr[k] === 'all') {
-            count++;
-            resultsArr.push(allData[i]);
-          }
-        }
-      }
-    }
-  }
-  return resultsArr;
-};
-
-const createGenreDataArr = (genreParam, allData) => {
-  if (genreParam === 'all') {
-    return Object.keys(allData)
-      .map((objKey) => {
-        return allData[objKey];
-      })
-      .flat();
-  } else {
-    const genreArr = Array.isArray(genreParam) ? genreParam : [genreParam];
-    return genreArr
-      .map((genre) => {
-        return allData[genre];
-      })
-      .flat();
-  }
-};
-
-const shuffleArr = (array) => {
-  //Fisher–Yates shuffle
-  let m = array.length;
-  let t, i;
-  // While there remain elements to shuffle…
-  while (m) {
-    // Pick a remaining element...
-    i = Math.floor(Math.random() * m--);
-    // And swap it with the current element.
-    t = array[m];
-    array[m] = array[i];
-    array[i] = t;
-  }
-  return array;
 };
 
 export { privateRoute };
