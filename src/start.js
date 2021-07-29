@@ -2,28 +2,34 @@ import express from 'express';
 import cors from 'cors';
 import 'express-async-errors';
 import logger from 'loglevel';
+import cookieParser from 'cookie-parser';
 
 import { getRoutes } from './routes';
 
 const startServer = ({ port = process.env.PORT } = {}) => {
   const app = express();
-  app.use(cors());
+  app.use(cors({
+    origin: 'http://localhost:1234',
+    methods: ['GET'],
+    credentials: true
+  }));
+  app.use(cookieParser());
   app.use('/', getRoutes());
   app.use(errorMiddleware);
 
-return new Promise((resolve) => {
-  const server = app.listen(port, () => {
-    logger.info(`Listening on port ${server.address().port}`);
-    const originalClose = server.close.bind(server);
-    server.close = () => {
-      return new Promise((resolveClose) => {
-        originalClose(resolveClose);
-      });
-    };
-    setupCloseOnExit(server);
-    resolve(server);
+  return new Promise((resolve) => {
+    const server = app.listen(port, () => {
+      logger.info(`Listening on port ${server.address().port}`);
+      const originalClose = server.close.bind(server);
+      server.close = () => {
+        return new Promise((resolveClose) => {
+          originalClose(resolveClose);
+        });
+      };
+      setupCloseOnExit(server);
+      resolve(server);
+    });
   });
-});
 };
 
 const errorMiddleware = (error, req, res, next) => {

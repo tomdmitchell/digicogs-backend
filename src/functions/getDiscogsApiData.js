@@ -14,11 +14,13 @@ const getDiscogsApiData = async (dataBatch) => {
     );
     promiseArr.push(reqPromise);
   }
-  const apiResponse = await Promise.all(promiseArr);
-  return apiResponse
+  try {
+    const apiResponse = await Promise.all(promiseArr);
+    return apiResponse
+  } catch (err) {
+    console.log(`ERROR getting Discogs Api Response: ${err}`)
+  }
 
-  // const clientResponse = formClientResponse(apiResponse, dataBatch);
-  // return clientResponse;
 };
 
 
