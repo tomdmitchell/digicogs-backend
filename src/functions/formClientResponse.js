@@ -1,6 +1,8 @@
 const formClientResponse = (apiResponse, dataBatch) => {
-  const apiFilteredRes = apiResponse.map((apiResObj, index) => {
+  const apiFilteredRes = apiResponse.
+  map((apiResObj, index) => {
     return {
+      id: handleGenericInfo(apiResObj.data.id),
       year: handleGenericInfo(apiResObj.data.year),
       url: handleGenericInfo(apiResObj.data.uri),
       artist: handleGenericInfo(apiResObj.data.artists_sort),

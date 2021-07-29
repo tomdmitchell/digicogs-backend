@@ -16,9 +16,6 @@ const getDiscogsApiData = async (dataBatch) => {
   }
   const apiResponse = await Promise.all(promiseArr);
   return apiResponse
-
-  // const clientResponse = formClientResponse(apiResponse, dataBatch);
-  // return clientResponse;
 };
 
 
