@@ -5,10 +5,7 @@ const filterDataIntoBatch = (yearsParam, stylesParam, allData, batchSize, usedId
   let count = 0;
   for (let i = 0; i < allData.length; i++) {
     if (count === batchSize) break;
-    if (usedIds && usedIds.includes(allData[i].releaseId)) {
-      console.log('ID sent previously, not returned in batch: ', allData[i].releaseId);
-      continue;
-    }
+    if (usedIds && usedIds.includes(allData[i].releaseId)) continue;
     for (let j = 0; j < reqYearsArr.length; j++) {
       if (allData[i].year === Number(reqYearsArr[j]) || reqYearsArr[j] === 'all') {
         for (let k = 0; k < reqStylesArr.length; k++) {
