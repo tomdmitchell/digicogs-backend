@@ -9,7 +9,7 @@ import { getRoutes } from './routes';
 const startServer = ({ port = process.env.PORT } = {}) => {
   const app = express();
   app.use(cors({
-    origin: 'http://localhost:1234',
+    origin: `${process.env.CORS_ORIGIN}`,
     methods: ['GET'],
     credentials: true
   }));
