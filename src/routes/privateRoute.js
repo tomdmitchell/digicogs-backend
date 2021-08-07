@@ -31,7 +31,7 @@ const handlePrivateRoute = async (req, res) => {
   let releaseIdsForBatch = batchData.map((data) => data.releaseId);
   //
   await handleUser(isNewUser, userId, releaseIdsForBatch);
-  isNewUser ? res.cookie('userId', userId, { maxAge: 7200000 }) : null;
+  isNewUser ? res.cookie('userId', userId, { maxAge: 7200000, sameSite:'none', secure: true }) : null;
   //
   const discogsApiData = await getDiscogsApiData(batchData);
   handleResWarnings(discogsApiData);
