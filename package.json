@@ -20,6 +20,7 @@
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",
+    "helmet": "^4.6.0",
     "loglevel": "^1.7.1",
     "nanoid": "^3.1.23"
   },

@@ -3,11 +3,13 @@ import cors from 'cors';
 import 'express-async-errors';
 import logger from 'loglevel';
 import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
 
 import { getRoutes } from './routes';
 
 const startServer = ({ port = process.env.PORT } = {}) => {
   const app = express();
+  app.use(helmet());
   app.use(cors({
     origin: `${process.env.CORS_ORIGIN}`,
     methods: ['GET'],
