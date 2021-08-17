@@ -1,4 +1,4 @@
-const formClientResponse = (apiResponse, dataBatch) => {
+const formClientResponse = (apiResponse, dataBatch, imageBase64Arr) => {
   const apiFilteredRes = apiResponse.
   map((apiResObj, index) => {
     return {
@@ -11,8 +11,7 @@ const formClientResponse = (apiResponse, dataBatch) => {
       country: handleGenericInfo(apiResObj.data.country),
       videos: handleVideoInfo(apiResObj.data),
       styles: handleGenericInfo(apiResObj.data.styles),
-      thumbnail: handleGenericInfo(apiResObj.data.thumb),
-      images: handleImageInfo(apiResObj.data),
+      image: handleImageInfo(imageBase64Arr[index]),
       numberOfReviews: handleGenericInfo(dataBatch[index].numberOfReviews),
     };
   });
@@ -47,16 +46,8 @@ const handleVideoInfo = (apiDataObj) => {
     });
 };
 
-const handleImageInfo = (apiDataObj) => {
-  if (!apiDataObj.images) return null;
-  return apiDataObj.images.map((imagesObj) => {
-    return {
-      type: imagesObj.type,
-      url: imagesObj.uri,
-      width: imagesObj.width,
-      height: imagesObj.height,
-    };
-  });
+const handleImageInfo = (imageData) => {
+  return {data: imageData}
 };
 
 module.exports = { formClientResponse };

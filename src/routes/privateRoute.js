@@ -13,6 +13,7 @@ import { createGenreDataArray } from '../functions/createGenreDataArray';
 import { filterDataIntoBatch } from '../functions/filterDataIntoBatch';
 import { getUsedIds } from '../functions/getUsedIds';
 import { handleUser } from '../functions/handleUser';
+import { getImages } from '../functions/getImages';
 
 const privateRoute = () => {
   const router = express.Router();
@@ -31,11 +32,14 @@ const handlePrivateRoute = async (req, res) => {
   let releaseIdsForBatch = batchData.map((data) => data.releaseId);
   //
   await handleUser(isNewUser, userId, releaseIdsForBatch);
-  isNewUser ? res.cookie('userId', userId, { maxAge: 7200000, sameSite:'none', secure: true }) : null;
+  isNewUser
+    ? res.cookie('userId', userId, { maxAge: 7200000, sameSite: 'none', secure: true })
+    : null;
   //
   const discogsApiData = await getDiscogsApiData(batchData);
   handleResWarnings(discogsApiData);
-  const clientResponse = formClientResponse(discogsApiData, batchData);
+  const imageBase64Arr = await getImages(discogsApiData);
+  const clientResponse = formClientResponse(discogsApiData, batchData, imageBase64Arr);
   res.send(clientResponse);
 };
 
