@@ -38,8 +38,8 @@ const handlePrivateRoute = async (req, res) => {
   //
   const discogsApiData = await getDiscogsApiData(batchData);
   handleResWarnings(discogsApiData);
-  const imageBase64Arr = await getImages(discogsApiData);
-  const clientResponse = formClientResponse(discogsApiData, batchData, imageBase64Arr);
+  const imageDataArr = await getImages(discogsApiData, req.query.images);
+  const clientResponse = formClientResponse(discogsApiData, batchData, imageDataArr);
   res.send(clientResponse);
 };
 

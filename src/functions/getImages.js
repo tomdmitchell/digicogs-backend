@@ -1,13 +1,17 @@
 import axios from 'axios';
 
-const getImages = async (discogsData) => {
+const getImages = async (discogsData, imageType) => {
+  if (imageType === 'none') return null;
+  const apiImageKey = imageType === 'thumb' ? 'uri150' : imageType === 'full' ? 'uri' : null;
+  if (apiImageKey === null) throw `ERROR IN IMAGE REQ QUERY PARAM`;
+  //
   let promiseArr = [];
   const options = {
     responseType: 'arraybuffer',
   };
   for (let i = 0; i < discogsData.length; i++) {
     if (discogsData[i].data.images) {
-      const reqPromise = axios.get(`${discogsData[i].data.images[0].uri}`, options);
+      const reqPromise = axios.get(`${discogsData[i].data.images[0][apiImageKey]}`, options);
       promiseArr.push(reqPromise);
     } else {
       promiseArr.push(
