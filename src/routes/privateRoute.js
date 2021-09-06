@@ -8,9 +8,6 @@ import masterData from '../data/master_data_reformat';
 import { getDiscogsApiData } from '../functions/getDiscogsApiData';
 import { handleResWarnings } from '../functions/handleResWarnings';
 import { formClientResponse } from '../functions/formClientResponse';
-import { shuffleArray } from '../functions/shuffleArray';
-import { createGenreDataArray } from '../functions/createGenreDataArray';
-import { filterDataIntoBatch } from '../functions/filterDataIntoBatch';
 import { getUsedIds } from '../functions/getUsedIds';
 import { handleUser } from '../functions/handleUser';
 import { getImages } from '../functions/getImages';
@@ -25,7 +22,7 @@ const privateRoute = () => {
 
 const handlePrivateRoute = async (req, res) => {
   const isNewUser = !req.cookies.userId ? true : false;
-  const usedIds = isNewUser ? null : await getUsedIds(req.cookies.userId);
+  const usedIds = isNewUser ? [] : await getUsedIds(req.cookies.userId);
   console.log('used IDs: ', usedIds);
   const userId = isNewUser ? nanoid() : req.cookies.userId;
   const batchNumber = handleBatchNumber(req.query.batch);
@@ -41,24 +38,13 @@ const handlePrivateRoute = async (req, res) => {
   );
   console.timeEnd('createSpecDataArray');
 
-  // const genreData = createGenreDataArray(req.query.genre, masterData);
-  // const shuffledData = shuffleArray(genreData);
-  //
-  // const batchData = filterDataIntoBatch(
-  //   req.query.year,
-  //   req.query.style,
-  //   // shuffledData,
-  //   batchNumber,
-  //   usedIds
-  // );
-
   const releaseIdsForBatch = specData.map((data) => data.releaseId);
-  // //
+  //
   await handleUser(isNewUser, userId, releaseIdsForBatch);
   isNewUser
     ? res.cookie('userId', userId, { maxAge: 7200000, sameSite: 'none', secure: true })
     : null;
-  // //
+  //
   const discogsApiData = await getDiscogsApiData(specData);
   handleResWarnings(discogsApiData);
   const imageDataArr = await getImages(discogsApiData, req.query.images);
