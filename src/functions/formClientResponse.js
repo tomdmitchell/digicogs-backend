@@ -10,7 +10,7 @@ const formClientResponse = (apiResponse, dataBatch, imageDataArr) => {
       labelInfo: handleLabelInfo(apiResObj.data),
       country: handleGenericInfo(apiResObj.data.country),
       videos: handleVideoInfo(apiResObj.data),
-      styles: handleGenericInfo(apiResObj.data.styles),
+      styles: handleGenericInfo(dataBatch[index].styles),
       image: requiresImages ? handleImageInfo(imageDataArr[index]) : handleImageInfo(null),
       numberOfReviews: handleGenericInfo(dataBatch[index].numberOfReviews),
     };

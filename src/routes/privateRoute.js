@@ -12,7 +12,7 @@ import { getUsedIds } from '../functions/getUsedIds';
 import { handleUser } from '../functions/handleUser';
 import { getImages } from '../functions/getImages';
 import { handleBatchNumber } from '../functions/handleBatchNumber';
-import { createSpecDataArray } from '../functions/createSpecDataArray';
+import { createBatchDataArr } from '../functions/createBatchDataArr';
 
 const privateRoute = () => {
   const router = express.Router();
@@ -23,12 +23,11 @@ const privateRoute = () => {
 const handlePrivateRoute = async (req, res) => {
   const isNewUser = !req.cookies.userId ? true : false;
   const usedIds = isNewUser ? [] : await getUsedIds(req.cookies.userId);
-  console.log('used IDs: ', usedIds);
   const userId = isNewUser ? nanoid() : req.cookies.userId;
   const batchNumber = handleBatchNumber(req.query.batch);
   //
-  console.time('createSpecDataArray');
-  const specData = createSpecDataArray(
+  console.time('createBatchDataArr');
+  const batchData = createBatchDataArr(
     req.query.genre,
     req.query.style,
     req.query.year,
@@ -36,20 +35,21 @@ const handlePrivateRoute = async (req, res) => {
     masterData,
     usedIds
   );
-  console.timeEnd('createSpecDataArray');
-
-  const releaseIdsForBatch = specData.map((data) => data.releaseId);
+  console.timeEnd('createBatchDataArr');
   //
+  const releaseIdsForBatch = batchData.map((data) => data.releaseId);
   await handleUser(isNewUser, userId, releaseIdsForBatch);
   isNewUser
     ? res.cookie('userId', userId, { maxAge: 7200000, sameSite: 'none', secure: true })
     : null;
   //
-  const discogsApiData = await getDiscogsApiData(specData);
+  const discogsApiData = await getDiscogsApiData(batchData);
   handleResWarnings(discogsApiData);
   const imageDataArr = await getImages(discogsApiData, req.query.images);
-  const clientResponse = formClientResponse(discogsApiData, specData, imageDataArr);
+  const clientResponse = formClientResponse(discogsApiData, batchData, imageDataArr);
   res.send(clientResponse);
 };
 
 export { privateRoute };
+
+//remove year and genre from individual objects in masterData
