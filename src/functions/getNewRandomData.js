@@ -21,7 +21,7 @@ const getNewRandomData = (stylesRequired, allData, yearsParam, resultsArr, usedI
         if (
           resultsArrIds.includes(resultsShuffled[k].releaseId) ||
           usedIds.includes(resultsShuffled[k].releaseId)
-        ) {Ï
+        ) {
           console.log('already used: ', resultsShuffled[k].releaseId);
           continue;
         } else {
