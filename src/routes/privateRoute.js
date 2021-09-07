@@ -37,6 +37,10 @@ const handlePrivateRoute = async (req, res) => {
   );
   console.timeEnd('createBatchDataArr');
   //
+  if (!batchData) {
+    res.send('handle no more results');
+    return;
+  }
   const releaseIdsForBatch = batchData.map((data) => data.releaseId);
   await handleUser(isNewUser, userId, releaseIdsForBatch);
   isNewUser
