@@ -1,5 +1,6 @@
-const formClientResponse = (apiResponse, dataBatch, imageDataArr) => {
-  const requiresImages = !imageDataArr ? false : true;
+// const formClientResponse = (apiResponse, dataBatch, imageDataArr) => {
+const formClientResponse = (apiResponse, dataBatch) => {
+  // const requiresImages = !imageDataArr ? false : true;
   const apiFilteredRes = apiResponse.map((apiResObj, index) => {
     return {
       id: handleGenericInfo(apiResObj.data.id),
@@ -12,7 +13,8 @@ const formClientResponse = (apiResponse, dataBatch, imageDataArr) => {
       videos: handleVideoInfo(apiResObj.data),
       styles: handleGenericInfo(dataBatch[index].styles),
       genre: handleGenericInfo(dataBatch[index].genre),
-      image: requiresImages ? handleImageInfo(imageDataArr[index]) : handleImageInfo(null),
+      images: handleImagesInfo(apiResObj.data),
+      // image: requiresImages ? handleImageInfo(imageDataArr[index]) : handleImageInfo(null),
       numberOfReviews: handleGenericInfo(dataBatch[index].numberOfReviews),
     };
   });
@@ -25,12 +27,13 @@ const handleGenericInfo = (data) => {
 
 const handleLabelInfo = (apiDataObj) => {
   if (!apiDataObj.labels) return null;
-  return apiDataObj.labels.map((labelObj) => {
+  const labelInfo = apiDataObj.labels.map((labelObj) => {
     return {
       labelName: labelObj.name,
       catNo: labelObj.catno,
     };
   });
+  return labelInfo[0]
 };
 
 const handleVideoInfo = (apiDataObj) => {
@@ -47,8 +50,24 @@ const handleVideoInfo = (apiDataObj) => {
     });
 };
 
-const handleImageInfo = (imageData) => {
-  return { data: imageData };
+const handleImagesInfo = (apiDataObj) => {
+  if (!apiDataObj.images) return null;
+  const imagesInfo = apiDataObj.images
+    .filter((imageObj) => imageObj.type === 'primary')
+    .map((imageObj) => {
+      return {
+        urls: {
+          uri: imageObj.uri,
+          uri150: imageObj.uri150,
+        },
+        dimensions: { width: imageObj.width, height: imageObj.height },
+      };
+    });
+    return imagesInfo[0]
 };
+
+// const handleImageInfo = (imageData) => {
+//   return { data: imageData };
+// };
 
 module.exports = { formClientResponse };

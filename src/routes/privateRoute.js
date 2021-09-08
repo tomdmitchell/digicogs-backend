@@ -10,7 +10,7 @@ import { handleResWarnings } from '../functions/private/handleResWarnings';
 import { formClientResponse } from '../functions/private/formClientResponse';
 import { getUsedIds } from '../functions/private/getUsedIds';
 import { handleUser } from '../functions/private/handleUser';
-import { getImages } from '../functions/private/getImages';
+// import { getImages } from '../functions/private/getImages';
 import { handleBatchNumber } from '../functions/private/handleBatchNumber';
 import { createBatchDataArr } from '../functions/private/createBatchDataArr';
 
@@ -49,11 +49,11 @@ const handlePrivateRoute = async (req, res) => {
   //
   const discogsApiData = await getDiscogsApiData(batchData);
   handleResWarnings(discogsApiData);
-  const imageDataArr = await getImages(discogsApiData, req.query.images);
-  const clientResponse = formClientResponse(discogsApiData, batchData, imageDataArr);
+  // const imageDataArr = await getImages(discogsApiData, req.query.images);
+  // const clientResponse = formClientResponse(discogsApiData, batchData, imageDataArr);
+  const clientResponse = formClientResponse(discogsApiData, batchData);
   res.send(clientResponse);
 };
 
 export { privateRoute };
 
-//remove year and genre from individual objects in masterData
