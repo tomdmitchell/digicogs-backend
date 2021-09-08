@@ -1,5 +1,5 @@
-import {handleNewUser} from '../functions/handleNewUser';
-import {handleExistingUser} from '../functions/handleExistingUser';
+import {handleNewUser} from './handleNewUser';
+import {handleExistingUser} from './handleExistingUser';
 
 const handleUser = async (isNewUser, userId, releaseIds) => {
   if (isNewUser) {
