@@ -6,7 +6,6 @@ import masterData from '../data/master_data_reformat';
 
 //functions
 import { getDiscogsApiData } from '../functions/private/getDiscogsApiData';
-import { handleResWarnings } from '../functions/private/handleResWarnings';
 import { formClientResponse } from '../functions/private/formClientResponse';
 import { getUsedIds } from '../functions/private/getUsedIds';
 import { handleUser } from '../functions/private/handleUser';
@@ -36,9 +35,9 @@ const handlePrivateRoute = async (req, res) => {
     usedIds
   );
   console.timeEnd('createBatchDataArr');
-  //
+  //NO MORE RESULTS
   if (!batchData) {
-    res.send('handle no more results');
+    res.send('resultsEnd');
     return;
   }
   const releaseIdsForBatch = batchData.map((data) => data.releaseId);
@@ -46,14 +45,21 @@ const handlePrivateRoute = async (req, res) => {
   isNewUser
     ? res.cookie('userId', userId, { maxAge: 7200000, sameSite: 'none', secure: true })
     : null;
-  //
   const discogsApiData = await getDiscogsApiData(batchData);
-  handleResWarnings(discogsApiData);
+  //ERROR RETREIVING RES
+  if (!discogsApiData) {
+    res.send('apiReqError');
+    return;
+  }
+  //TOO MANY REQUESTS WARNING
+  const limitWarning = Number(discogsApiData[0].headers['x-discogs-ratelimit-remaining'] <= 2)
+    ? true
+    : false;
+  //
   // const imageDataArr = await getImages(discogsApiData, req.query.images);
   // const clientResponse = formClientResponse(discogsApiData, batchData, imageDataArr);
-  const clientResponse = formClientResponse(discogsApiData, batchData);
+  const clientResponse = formClientResponse(discogsApiData, batchData, limitWarning);
   res.send(clientResponse);
 };
 
 export { privateRoute };
-

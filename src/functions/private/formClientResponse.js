@@ -1,5 +1,5 @@
 // const formClientResponse = (apiResponse, dataBatch, imageDataArr) => {
-const formClientResponse = (apiResponse, dataBatch) => {
+const formClientResponse = (apiResponse, dataBatch, limitWarning) => {
   // const requiresImages = !imageDataArr ? false : true;
   const apiFilteredRes = apiResponse.map((apiResObj, index) => {
     return {
@@ -16,6 +16,7 @@ const formClientResponse = (apiResponse, dataBatch) => {
       images: handleImagesInfo(apiResObj.data),
       // image: requiresImages ? handleImageInfo(imageDataArr[index]) : handleImageInfo(null),
       numberOfReviews: handleGenericInfo(dataBatch[index].numberOfReviews),
+      limitWarning: limitWarning
     };
   });
   return apiFilteredRes;
