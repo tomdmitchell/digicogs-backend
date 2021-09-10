@@ -6,7 +6,6 @@ const getUsedIds = async (existingUserId) => {
     return JSON.parse(existingFile).usedIds;
   } catch (err) {
     console.log(`ERROR getting UsedIds: ${err}`)
-    return [];
   }
 };
 

@@ -22,7 +22,7 @@ const privateRoute = () => {
 const handlePrivateRoute = async (req, res) => {
   const isNewUser = !req.cookies.userId ? true : false;
   const usedIds = isNewUser ? [] : await getUsedIds(req.cookies.userId);
-  const userId = isNewUser || usedIds.length === 0 ? nanoid() : req.cookies.userId;
+  const userId = isNewUser ? nanoid() : req.cookies.userId;
   const batchNumber = handleBatchNumber(req.query.batch);
   //
   console.time('createBatchDataArr');
