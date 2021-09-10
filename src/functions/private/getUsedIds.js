@@ -5,7 +5,8 @@ const getUsedIds = async (existingUserId) => {
     const existingFile = await fsPromises.readFile(`src/temp_user_data/${existingUserId}.json`);
     return JSON.parse(existingFile).usedIds;
   } catch (err) {
-    console.log(`ERROR getting UsedIds: ${err}`)
+    console.log(`ERROR getting UsedIds: ${err}`);
+    return [];
   }
 };
 
