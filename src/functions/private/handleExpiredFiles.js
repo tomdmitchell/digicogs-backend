@@ -9,10 +9,13 @@ const handleExpiredFiles = async () => {
 const deleteExpiredFiles = async () => {
   try {
     const allFileNames = await fsPromises.readdir(`src/temp_user_data/`);
+    console.log('all file names: ', allFileNames);
     for (let i = 0; i < allFileNames.length; i++) {
       if (allFileNames[i] === '.gitignore') continue;
       const file = await fsPromises.readFile(`src/temp_user_data/${allFileNames[i]}`);
+      console.log('parsed file in deleteExpiredFiles: ', JSON.parse(file))
       const expiry = JSON.parse(file).expiry;
+      console.log('expiry of file: ', expiry)
       if (new Date().getTime() > expiry) {
         await fsPromises.unlink(`src/temp_user_data/${allFileNames[i]}`);
         console.log(`Deleted expired file: ${allFileNames[i]}`);
