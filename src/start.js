@@ -10,11 +10,15 @@ import { getRoutes } from './routes';
 const startServer = ({ port = process.env.PORT } = {}) => {
   const app = express();
   app.use(helmet());
-  app.use(cors({
-    origin: `${process.env.CORS_ORIGIN}`,
-    methods: ['GET'],
-    credentials: true
-  }));
+  app.use(
+    cors({
+      origin: `${
+        process.env.NODE_ENV !== 'dev' ? process.env.CORS_ORIGIN : process.env.CORS_ORIGIN_DEV
+      }`,
+      methods: ['GET'],
+      credentials: true,
+    })
+  );
   app.use(cookieParser());
   app.use('/', getRoutes());
   app.use(errorMiddleware);
